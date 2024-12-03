@@ -28,9 +28,7 @@ app.post("/mediziai", (req, res) => {
     connection.query(sql, [req.body.name, req.body.height, req.body.type]);
 
     res.json({message: "OK"});
-
 })
-
 
 app.get('/post/:id', (req, res) => {
     res.send(`new post ${req.params.id}`)
