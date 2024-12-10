@@ -2,6 +2,9 @@ const express = require("express");
 const app = express();
 const port = 3300;
 const mysql = require("mysql2");
+const cors = require("cors");
+
+app.use(cors);
 
 app.use(
   express.urlencoded({
@@ -11,16 +14,16 @@ app.use(
 
 app.use(express.json());
 
-const connnection = mysql.createConnection({
+const connection = mysql.createConnection({
   host: "localhost",
   user: "root",
   password: "",
   database: "treesdb",
   multipleStatements: true,
-  port: 3307,
+  port: 3308,
 });
 
-connnection.connect(function (err) {
+connection.connect(function (err) {
   if (err) throw err;
   console.log("Connected!");
 });
@@ -35,7 +38,7 @@ connnection.connect(function (err) {
 app.post("/medziai", (req, res) => {
   let sql = `INSERT INTO trees (name, height, type) VALUES (?,?,?);`;
 
-  connnection.query(
+  connection.query(
     sql,
     [req.body.name, req.body.height, req.body.type],
     (err, result) => {
@@ -50,6 +53,44 @@ app.post("/medziai", (req, res) => {
 
   res.json({ message: "Data inserted succesfully" });
 });
+
+// app.get("/medis/:id", (req, res) => {
+//   let sql = `SELECT * FROM trees WHERE id = ?`;
+
+//   connection.query(
+//     sql,
+//     [req.params.id];
+//     function (err, result) => {
+//       if(err){
+//         console.error("Error geting data ", err);
+//         return res
+//           .status(500)
+//           .json({ message: "Error insertinh data", error: err.message });
+//       }
+//     }
+//   );
+//   res.json({ me });
+// });
+
+app.delete("/delete/:id)", (req,res) => {
+  let sql = `DELETE FROM tree WHERE id = ?`;
+
+  connection.query(sql, [req.params.id], (res, result) => {
+    if(err){
+      console.log("erroe", err);
+      return res.status(500),json({message: "error", err: err.message});
+    }
+
+    res.json({mesage: "Record delete",
+      deleteRecord: {
+        id: req.params.id,
+        name: req.params.name,
+        height: req.params.height,
+        type: req.params.type
+      }
+    })
+  })
+})
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
